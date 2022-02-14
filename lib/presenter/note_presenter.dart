@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:todo/data/task_data.dart';
+import 'package:todo/data/task_repo.dart';
+import 'package:todo/main.dart';
 import 'package:todo/model/task.dart';
 
 class NotePresenter extends ChangeNotifier {
   List<Task> taskList = [];
-
+  List<TaskData> taskDataList = [];
   int _categoryAddColorIndex = 0;
   String _categoryAddName = 'Personal';
   String _categoryAddTask = '';
@@ -95,6 +98,17 @@ class NotePresenter extends ChangeNotifier {
   }
 
   Future taskListSet(Task task) async {
+    taskDataList.add(TaskData(
+        categoryName: '${task.categoryName}',
+        colorTaskIndex: task.colorTaskIndex,
+        dateTask: '${task.dateTask}',
+        finishTask: false,
+        nameTask: '${task.nameTask}',
+        timeTask: '${task.timeTask}'));
+    var taskRepo = TaskRepo(taskDataList: taskDataList);
+    box
+        .put('TodoTask', taskRepo)
+        .then((value) => print("Done ${taskDataList.length} "));
     taskList.add(task);
     notifyListeners();
   }

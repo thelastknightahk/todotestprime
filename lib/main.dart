@@ -1,11 +1,27 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:todo/data/task_data.dart';
+import 'package:todo/data/task_repo.dart';
 import 'package:todo/presenter/note_presenter.dart';
 import 'package:todo/screen/add_note.dart';
 import 'package:todo/screen/home.dart';
 import 'package:todo/screen/update_note.dart';
 
-void main() {
+late Box box;
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  var path = Directory.current.path;
+  await Hive.initFlutter(path);
+  box = await Hive.openBox<TaskRepo>('todo');
+  Hive
+    ..init(path)
+    ..registerAdapter(TaskRepoAdapter())
+    ..registerAdapter(TaskDataAdapter());
+
   runApp(ChangeNotifierProvider(
     create: (context) => NotePresenter(),
     child: const MyApp(),
