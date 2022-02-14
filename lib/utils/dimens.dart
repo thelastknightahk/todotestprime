@@ -9,6 +9,8 @@ const double MARGIN_XLARGE = 32;
 const double MARGIN_XXLARGE = 48;
 const double MARGIN_XXXLARGE = 56;
 const double MARGIN_XXXXLARGE = 64;
+const double paddingDialog = 20;
+const double avatarRadiusDialog = 45;
 
 //App Specifi Dimension
 const double MARGIN_10 = 10;

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:todo/model/category.dart';
 import 'package:todo/model/task.dart';
+import 'package:todo/presenter/note_presenter.dart';
 import 'package:todo/utils/colors.dart';
 import 'package:todo/utils/dimens.dart';
 import 'package:todo/widgets/category_item.dart';
@@ -108,87 +110,89 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     fullWidth = MediaQuery.of(context).size.width;
     fullHeight = MediaQuery.of(context).size.height;
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding:
-                  EdgeInsets.only(right: MARGIN_MEDIUM_3, top: MARGIN_MEDIUM_3),
-              child: Align(
-                alignment: Alignment.topRight,
-                child: Icon(
-                  Icons.notifications_active,
-                  color: blackColor,
-                  // notifications_none_outlined
+    return Consumer<NotePresenter>(
+      builder: (context, presenter, child) => Scaffold(
+        body: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: EdgeInsets.only(
+                    right: MARGIN_MEDIUM_3, top: MARGIN_MEDIUM_3),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: Icon(
+                    Icons.notifications_active,
+                    color: blackColor,
+                    // notifications_none_outlined
+                  ),
                 ),
               ),
-            ),
-            Container(
-              padding: EdgeInsets.all(MARGIN_MEDIUM_3),
-              child: Text(
-                "What's up, Joy!",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: TEXT_REGULAR_3X),
+              Container(
+                padding: EdgeInsets.all(MARGIN_MEDIUM_3),
+                child: Text(
+                  "What's up, Joy!",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: TEXT_REGULAR_3X),
+                ),
               ),
-            ),
-            Container(
-              margin:
-                  EdgeInsets.only(top: MARGIN_XLARGE, left: MARGIN_MEDIUM_3),
-              child: Text(
-                "CATEGORIES",
-                style:
-                    TextStyle(color: blackLightColor, fontSize: TEXT_REGULAR),
+              Container(
+                margin:
+                    EdgeInsets.only(top: MARGIN_XLARGE, left: MARGIN_MEDIUM_3),
+                child: Text(
+                  "CATEGORIES",
+                  style:
+                      TextStyle(color: blackLightColor, fontSize: TEXT_REGULAR),
+                ),
               ),
-            ),
-            Container(
-              padding:
-                  EdgeInsets.only(left: MARGIN_MEDIUM_3, top: MARGIN_MEDIUM_2),
-              height: fullHeight / 6,
-              child: FutureBuilder(
-                  future: fetchCategoryData(),
-                  builder: (context, projectSnap) {
-                    if (!projectSnap.hasData) {
+              Container(
+                padding: EdgeInsets.only(
+                    left: MARGIN_MEDIUM_3, top: MARGIN_MEDIUM_2),
+                height: fullHeight / 6,
+                child: FutureBuilder(
+                    future: fetchCategoryData(),
+                    builder: (context, projectSnap) {
+                      if (!projectSnap.hasData) {
+                        return Center(child: CircularProgressIndicator());
+                      } else {
+                        return CategoryItem(context, categoryList);
+                      }
+                    }),
+              ),
+              Container(
+                margin: EdgeInsets.only(
+                    top: MARGIN_XLARGE,
+                    left: MARGIN_MEDIUM_3,
+                    bottom: MARGIN_MEDIUM_3),
+                child: Text(
+                  "TODAY'S TASKS  ${presenter.taskList.length} tasks ",
+                  style:
+                      TextStyle(color: blackLightColor, fontSize: TEXT_REGULAR),
+                ),
+              ),
+              Expanded(
+                child: FutureBuilder(
+                  future: presenter.getTaskList(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
                       return Center(child: CircularProgressIndicator());
                     } else {
-                      return CategoryItem(context, categoryList);
+                      return taskItem(context, presenter.taskList);
                     }
-                  }),
-            ),
-            Container(
-              margin: EdgeInsets.only(
-                  top: MARGIN_XLARGE,
-                  left: MARGIN_MEDIUM_3,
-                  bottom: MARGIN_MEDIUM_3),
-              child: Text(
-                "TODAY'S TASKS",
-                style:
-                    TextStyle(color: blackLightColor, fontSize: TEXT_REGULAR),
-              ),
-            ),
-            Expanded(
-              child: FutureBuilder(
-                future: fetchTaskList(),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return Center(child: CircularProgressIndicator());
-                  } else {
-                    return taskItem(context, taskList);
-                  }
-                },
-              ),
-            )
-          ],
+                  },
+                ),
+              )
+            ],
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blueAccent,
-        onPressed: () {
-          Navigator.pushNamed(context, '/addNote');
-        },
-        child: const Icon(Icons.add),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.blueAccent,
+          onPressed: () {
+            Navigator.pushNamed(context, '/addNote');
+          },
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }

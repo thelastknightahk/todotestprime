@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:todo/presenter/note_presenter.dart';
 import 'package:todo/screen/add_note.dart';
 import 'package:todo/screen/home.dart';
 import 'package:todo/screen/update_note.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => NotePresenter(),
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
